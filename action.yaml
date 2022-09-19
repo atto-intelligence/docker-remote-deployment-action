@@ -50,6 +50,9 @@ inputs:
   docker_registry_uri:
     description: The docker registry URI. Default is https://registry.hub.docker.com.
     required: false
+  docker_script_service:
+    description: The script to run single service
+    required: false
 
 runs:
   using: docker

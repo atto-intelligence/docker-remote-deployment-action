@@ -71,6 +71,10 @@ case $INPUT_DEPLOYMENT_MODE in
     DEPLOYMENT_COMMAND="docker $DEPLOYMENT_COMMAND_OPTIONS stack deploy --compose-file $STACK_FILE"
   ;;
 
+  docker-swarm-script)
+    DEPLOYMENT_COMMAND=$INPUT_DOCKER_SCRIPT_SERVICE
+  ;;
+
   *)
     INPUT_DEPLOYMENT_MODE="docker-compose"
     DEPLOYMENT_COMMAND="docker-compose -f $STACK_FILE $DEPLOYMENT_COMMAND_OPTIONS"
