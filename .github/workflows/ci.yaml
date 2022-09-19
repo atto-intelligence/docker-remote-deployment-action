@@ -5,13 +5,13 @@ on:
     types:
       - created
 
-env:
-  IMAGE_TAG: v1
-  REPOSITORY: docker-deployment-action
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: AWS Login
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v2
 
@@ -24,9 +24,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::716039377545:role/gh-actions-docker-remote-deployment
+          aws-region: sa-east-1
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -36,6 +35,7 @@ jobs:
         id: build-image
         uses: docker/build-push-action@v2
         env:
+          IMAGE_TAG: ${{ github.ref_name }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         with:
           context: .
@@ -44,6 +44,6 @@ jobs:
           build-args: |
             IMAGE_TAG=${{ env.IMAGE_TAG }}
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
-          cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ env.ECR_REGISTRY }}/docker-deployment-action:${{ env.IMAGE_TAG }}
+          cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/docker-deployment-action:${{ env.IMAGE_TAG }}
           cache-to: type=inline
