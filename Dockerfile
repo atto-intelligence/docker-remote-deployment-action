@@ -6,8 +6,8 @@ LABEL 'com.github.actions.description'='supports docker-compose and Docker Swarm
 LABEL 'com.github.actions.icon'='send'
 LABEL 'com.github.actions.color'='green'
 
-RUN apk --no-cache add openssh-client make
+RUN apk --no-cache add openssh-client make bash
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-ENTRYPOINT ["sh", "/docker-entrypoint.sh"]
+ENTRYPOINT ["bash", "/docker-entrypoint.sh"]

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -eu
 
 if [ -z "${INPUT_REMOTE_DOCKER_PORT+x}" ]; then
@@ -71,12 +71,10 @@ ssh-keyscan -p $INPUT_REMOTE_DOCKER_PORT "$SSH_HOST" >> ~/.ssh/known_hosts
 ssh-keyscan -p $INPUT_REMOTE_DOCKER_PORT "$SSH_HOST" >> /etc/ssh/ssh_known_hosts
 
 echo "Create docker context"
-docker context ls
 docker context create remote --docker "host=ssh://$INPUT_REMOTE_DOCKER_HOST:$INPUT_REMOTE_DOCKER_PORT" || true
-docker context use remote
+docker context ls
 
-echo "$INPUT_DOCKER_REGISTRY_TOKEN" >> ~/.ssh/token.txt
-scp ~/.ssh/token.txt docker@172.16.0.64:/home/docker
+docker context use remote
 
 if ! [ -z "${INPUT_DOCKER_REGISTRY_USERNAME+x}" ] && ! [ -z "${INPUT_DOCKER_REGISTRY_TOKEN+x}" ]; then
   echo "Connecting to $INPUT_REMOTE_DOCKER_HOST... Command: docker login"
