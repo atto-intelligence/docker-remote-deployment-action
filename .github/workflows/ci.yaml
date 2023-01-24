@@ -32,7 +32,7 @@ jobs:
 
       - name: Build Image and Push to ECR
         id: build-image
-        uses: docker/build-push-action@v3.3.0
+        uses: docker/build-push-action@v3.2.0
         env:
           IMAGE_TAG: ${{ github.ref_name }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
