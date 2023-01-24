@@ -75,12 +75,9 @@ docker context ls
 docker context create remote --docker "host=ssh://$INPUT_REMOTE_DOCKER_HOST:$INPUT_REMOTE_DOCKER_PORT" || true
 docker context use remote
 
-echo "$INPUT_DOCKER_REGISTRY_TOKEN" >> ~/.ssh/token.txt
-cat ~/.ssh/token.txt
-
 if ! [ -z "${INPUT_DOCKER_REGISTRY_USERNAME+x}" ] && ! [ -z "${INPUT_DOCKER_REGISTRY_TOKEN+x}" ]; then
   echo "Connecting to $INPUT_REMOTE_DOCKER_HOST... Command: docker login"
-  echo "$INPUT_DOCKER_REGISTRY_TOKEN" | docker login -u "$INPUT_DOCKER_REGISTRY_USERNAME" --password-stdin "$INPUT_DOCKER_REGISTRY_URI"
+  echo "$INPUT_DOCKER_REGISTRY_TOKEN" | docker login -u "$INPUT_DOCKER_REGISTRY_USERNAME" -p "$INPUT_DOCKER_REGISTRY_URI"
 fi
 
 echo "Connecting to $INPUT_REMOTE_DOCKER_HOST... Command: ${DEPLOYMENT_COMMAND} ${INPUT_ARGS}"
