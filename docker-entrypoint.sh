@@ -53,6 +53,7 @@ esac
 
 
 SSH_HOST=${INPUT_REMOTE_DOCKER_HOST#*@}
+DOCKER_CONTEXT=$(echo "${SSH_HOST//./_}")
 
 echo "Registering SSH keys..."
 mkdir -p ~/.ssh
@@ -71,11 +72,10 @@ ssh-keyscan -p $INPUT_REMOTE_DOCKER_PORT "$SSH_HOST" >> ~/.ssh/known_hosts
 ssh-keyscan -p $INPUT_REMOTE_DOCKER_PORT "$SSH_HOST" >> /etc/ssh/ssh_known_hosts
 
 echo "Create docker context"
-echo "host=ssh://$INPUT_REMOTE_DOCKER_HOST:$INPUT_REMOTE_DOCKER_PORT"
-docker context create remote --docker "host=ssh://$INPUT_REMOTE_DOCKER_HOST:$INPUT_REMOTE_DOCKER_PORT" || true
+docker context create $DOCKER_CONTEXT --docker "host=ssh://$INPUT_REMOTE_DOCKER_HOST:$INPUT_REMOTE_DOCKER_PORT" || true
 docker context ls
 
-docker context use remote
+docker context use $DOCKER_CONTEXT
 
 if ! [ -z "${INPUT_DOCKER_REGISTRY_USERNAME+x}" ] && ! [ -z "${INPUT_DOCKER_REGISTRY_TOKEN+x}" ]; then
   echo "Connecting to $INPUT_REMOTE_DOCKER_HOST... Command: docker login"
