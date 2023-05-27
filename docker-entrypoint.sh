@@ -20,11 +20,6 @@ if [ -z "${INPUT_SSH_PRIVATE_KEY+x}" ]; then
   exit 1
 fi
 
-if [ -z "${INPUT_ARGS+x}" ]; then
-  echo "Input input_args is required!"
-  exit 1
-fi
-
 if [ -z "${INPUT_STACK_FILE_NAME+x}" ]; then
   INPUT_STACK_FILE_NAME=docker-compose.yaml
 fi
@@ -42,7 +37,9 @@ case $INPUT_DEPLOYMENT_MODE in
   ;;
 
   script)
-    DEPLOYMENT_COMMAND=$INPUT_DOCKER_SCRIPT
+    echo "$INPUT_DOCKER_SCRIPT" > /tmp/docker_script.sh
+    chmod +x /tmp/docker_script.sh
+    DEPLOYMENT_COMMAND="/tmp/docker_script.sh"
   ;;
 
   *)
@@ -82,5 +79,8 @@ if ! [ -z "${INPUT_DOCKER_REGISTRY_USERNAME+x}" ] && ! [ -z "${INPUT_DOCKER_REGI
   echo "$INPUT_DOCKER_REGISTRY_TOKEN" | docker login -u "$INPUT_DOCKER_REGISTRY_USERNAME" --password-stdin "$INPUT_DOCKER_REGISTRY_URI"
 fi
 
-echo "Connecting to $INPUT_REMOTE_DOCKER_HOST... Command: ${DEPLOYMENT_COMMAND} ${INPUT_ARGS}"
-${DEPLOYMENT_COMMAND} ${INPUT_ARGS} 2>&1
+echo "Connecting to $INPUT_REMOTE_DOCKER_HOST..."
+echo "Command:"
+cat ${DEPLOYMENT_COMMAND}
+
+bash -c "${DEPLOYMENT_COMMAND}"
